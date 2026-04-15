@@ -98,7 +98,7 @@ public class Path {
 
             for (Arc arc : nodeOr.getSuccessors()) {
                 if (arc.getDestination().equals(nodeDst)){
-                    if (arcMin > arc.getLength()){
+                    if (tailleMin > arc.getLength()){
                         tailleMin = arc.getLength();
                         arcMin = arc;
                     }
@@ -106,7 +106,7 @@ public class Path {
             }
 
             if (arcMin == null){
-                throw new IllegalArgumentException;
+                throw new IllegalArgumentException();
             }
 
             arcs.add(arcMin);
@@ -252,12 +252,12 @@ public class Path {
     public boolean isValid() {
         if (isEmpty()) return true;
         if ((size()==1) && (getArcs().size()==0)) return true;
-        boolean condition = true;
-        for (int i = 0; i < getArcs.size()-1; ++i) {
-            if (!getArcs().get(i-1).getDestination().equals(getArcs().get(i+1).getOrigin())) condition = false;
+        if (!getArcs().get(0).getOrigin().equals(getOrigin())) return false;
+        for (int i = 0; i < getArcs().size()-1; ++i) {
+            if (!getArcs().get(i).getDestination().equals(getArcs().get(i+1).getOrigin()))
+                return false;
         }
-        if ((getArcs().get(0).getOrigin().equals(getOrigin())) && condition) return true; 
-        return false;
+        return true;
     }
 
     /**
@@ -297,7 +297,7 @@ public class Path {
      * @return Minimum travel time to travel this path (in seconds).
      */
     public double getMinimumTravelTime() {
-        double travelTime = O;
+        double travelTime = 0;
         for (Arc arc : getArcs()) {
             travelTime+= arc.getMinimumTravelTime();
         }
