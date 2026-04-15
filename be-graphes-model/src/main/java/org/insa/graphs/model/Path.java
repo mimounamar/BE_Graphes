@@ -48,7 +48,39 @@ public class Path {
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+
+        if (nodes.isEmpty()){
+            return new Path(graph);
+        }
+
+        if (nodes.size() == 1){
+            return new Path(graph, nodes.get(0));
+        }
+
+        for (int i = 0; i< nodes.size() -1; i++){
+            Node nodeOr = nodes.get(i);
+            Node nodeDst = nodes.get(i+1);
+
+            Arc arcMin= null;
+            float tailleMin = Float.MAX_VALUE;
+
+            for (Arc arc : nodeOr.getSuccessors()) {
+                if (arc.getDestination().equals(nodeDst)){
+                    if (arcMin > arc.getLength()){
+                        tailleMin = arc.getLength();
+                        arcMin = arc;
+                    }
+                }
+            }
+
+            if (arcMin == null){
+                throw new IllegalArgumentException;
+            }
+
+            arcs.add(arcMin);
+
+        }
+
         return new Path(graph, arcs);
     }
 
@@ -184,10 +216,15 @@ public class Path {
      * </ul>
      *
      * @return true if the path is valid, false otherwise.
-     * @deprecated Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
+        if (isEmpty()) return true;
+        if ((size()==1) && (getArcs().size()==0)) return true;
+        boolean condition = true;
+        for (int i = 0; i < getArcs.size()-1; ++i) {
+            if (!getArcs().get(i-1).getDestination().equals(getArcs().get(i+1).getOrigin())) condition = false;
+        }
+        if ((getArcs().get(0).getOrigin().equals(getOrigin())) && condition) return true; 
         return false;
     }
 
@@ -220,11 +257,13 @@ public class Path {
      * every arc.
      *
      * @return Minimum travel time to travel this path (in seconds).
-     * @deprecated Need to be implemented.
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+        double travelTime = O;
+        for (Arc arc : getArcs()) {
+            travelTime+= arc.getMinimumTravelTime();
+        }
+        return travelTime;
     }
 
 }
