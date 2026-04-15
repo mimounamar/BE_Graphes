@@ -210,11 +210,13 @@ public class Path {
      * @param speed Speed to compute the travel time.
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
-     * @deprecated Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+        float acc = 0;
+        for (Arc currentArc : this.arcs) {
+            acc += currentArc.getTravelTime(speed);
+        }
+        return acc;
     }
 
     /**
