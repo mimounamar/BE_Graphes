@@ -31,17 +31,23 @@ public class Path {
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
         int pathLength = nodes.size();
+
+        // Gestion des cas limites (0 ou 1 noeud).
         if (pathLength == 0) {
             return new Path(graph);
         } else if (pathLength == 1) {
             return new Path(graph, nodes.get(0));
         }
+
+        // Cas général : exploration des noeuds deux à deux, puis on garde l'arc
+        // le + rapide.
         for (int i = 0; i < pathLength - 1; i++) {
             Node currentNode = nodes.get(i);
             Node nextNode = nodes.get(i + 1);
             Arc minArc = null;
             double minDuration = Double.MAX_VALUE;
             double currentDuration;
+
             for (Arc currentArc : currentNode.getSuccessors()) {
                 if (currentArc.getDestination().equals(nextNode)) {
                     currentDuration = currentArc.getMinimumTravelTime();
@@ -51,6 +57,7 @@ public class Path {
                     }
                 }
             }
+
             if (minArc == null) {
                 throw new IllegalArgumentException("Des noeuds du graphe ne sont pas liés entre eux.");
             }
@@ -222,6 +229,7 @@ public class Path {
      * @return Total length of the path (in meters).
      */
     public float getLength() {
+        // Sommer les longueurs de tous les arcs.
         float acc = 0;
         for (Arc currentArc : this.arcs) {
             acc += currentArc.getLength();
@@ -237,6 +245,7 @@ public class Path {
      *         kilometers-per-hour).
      */
     public double getTravelTime(double speed) {
+        // Sommer les temps de voyage de tous les arcs.
         float acc = 0;
         for (Arc currentArc : this.arcs) {
             acc += currentArc.getTravelTime(speed);
