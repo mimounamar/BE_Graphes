@@ -49,7 +49,7 @@ public class BellmanFordAlgorithm extends ShortestPathAlgorithm {
                         continue;
                     }
 
-                    // Retrieve weight of the arc.
+                    // Retrieve weight of the arc. 
                     double w = data.getCost(arc);
                     double oldDistance = distances[arc.getDestination().getId()];
                     double newDistance = distances[node.getId()] + w;

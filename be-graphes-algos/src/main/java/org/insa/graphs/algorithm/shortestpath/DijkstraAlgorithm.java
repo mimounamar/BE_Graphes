@@ -33,7 +33,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
         final int nbNodes = graph.size();
 
-        // Initialize array of labels.
+        // Initialize array of labels. TO DO : tout initialiser ? Hash table ?
         Label[] labels = new Label[nbNodes];
 
         for(int i = 0; i< nbNodes; i++){
@@ -71,14 +71,14 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 Node n = a.getDestination();
                 Label y = labels[n.getId()];
                 if (!y.getMarque()){
-                    if(y.getCoutRealise()> (x.getCoutRealise()+ a.getLength())){
+                    if(y.getCoutRealise()> (x.getCoutRealise()+ data.getCost(a))){
                         try{
                             tas.remove(y);  
 
                         }catch(Exception e){
                             notifyNodeReached(n);
                         }
-                        y.setCoutRealise((x.getCout()+ a.getLength()));
+                        y.setCoutRealise((x.getCout()+ data.getCost(a)));
                         y.setPere(a);
                         tas.insert(y);
                         labels[n.getId()] = y;
