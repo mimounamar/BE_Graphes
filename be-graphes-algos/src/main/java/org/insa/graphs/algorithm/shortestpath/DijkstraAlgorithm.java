@@ -14,8 +14,17 @@ import org.insa.graphs.algorithm.AbstractSolution.Status;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 
+    protected Label[] labels;
+
     public DijkstraAlgorithm(ShortestPathData data) {
         super(data);
+        labels = new Label[data.getGraph().size()];
+        labels[data.getOrigin().getId()] = new Label(data.getOrigin());
+        labels[data.getDestination().getId()] = new Label(data.getDestination());
+    }
+
+    protected void createLabel(Node n){
+        labels[n.getId()] = new Label(n);
     }
 
     @Override
@@ -31,23 +40,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         // variable that will contain the solution of the shortest path problem
         ShortestPathSolution solution = null;
 
-        final int nbNodes = graph.size();
-
-        // Initialize array of labels. TO DO : Hash table ? comparer gains réels
-        Label[] labels = new Label[nbNodes];
-        //Arrays.fill(labels, null);
-
-        /* 
-        for(int i = 0; i< nbNodes; i++){
-            labels[i] = new Label(graph.get(i));
-        }
-        */
-
         BinaryHeap<Label> tas = new BinaryHeap<Label>();
 
         // Mettre dans la liste des labels l'origine et la destination.
-        labels[data.getOrigin().getId()] = new Label(data.getOrigin());
-        labels[data.getDestination().getId()] = new Label(data.getDestination());
+        
         labels[data.getOrigin().getId()].setCoutRealise(0);
         tas.insert(labels[data.getOrigin().getId()]);
 
@@ -58,7 +54,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
         // Iterations Djikstra
         Label x = null;
 
-        while(!tas.isEmpty()) { // condition problématique, remplacer par tas binaire vide
+        while(!tas.isEmpty()) {
             x = tas.deleteMin();
 
             if (x.getSommetCourant().equals(data.getDestination())){
@@ -77,7 +73,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                 Node n = a.getDestination();
                 Label y = labels[n.getId()];
                 if (y == null) {
-                    labels[n.getId()] = new Label(n);
+                    createLabel(n);
                     y = labels[n.getId()];
                 }
                 if (!y.getMarque()){
@@ -88,7 +84,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
                         }catch(Exception e){
                             notifyNodeReached(n);
                         }
-                        y.setCoutRealise((x.getCout()+ data.getCost(a)));
+                        y.setCoutRealise((x.getCoutRealise()+ data.getCost(a)));
                         y.setPere(a);
                         tas.insert(y);
                         labels[n.getId()] = y;
