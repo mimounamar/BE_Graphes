@@ -91,13 +91,13 @@ public class Path {
             Node nodeOr = nodes.get(i);
             Node nodeDst = nodes.get(i+1);
 
-            Arc arcMin= null;
-            float tailleMin = Float.MAX_VALUE;
+            Arc arcMin = null;
+            float lengthMin = Float.MAX_VALUE;
 
             for (Arc arc : nodeOr.getSuccessors()) {
                 if (arc.getDestination().equals(nodeDst)){
-                    if (tailleMin > arc.getLength()){
-                        tailleMin = arc.getLength();
+                    if (lengthMin > arc.getLength()){
+                        lengthMin = arc.getLength();
                         arcMin = arc;
                     }
                 }
@@ -297,7 +297,7 @@ public class Path {
     public double getMinimumTravelTime() {
         double travelTime = 0;
         for (Arc arc : getArcs()) {
-            travelTime+= arc.getMinimumTravelTime();
+            travelTime += arc.getMinimumTravelTime();
         }
         return travelTime;
     }

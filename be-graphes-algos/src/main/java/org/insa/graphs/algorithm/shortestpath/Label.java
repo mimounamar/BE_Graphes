@@ -1,57 +1,71 @@
 package org.insa.graphs.algorithm.shortestpath;
 
+import java.util.List;
+
 import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Node;
 
 public class Label implements Comparable<Label>{
+
+    private Node currentNode;
+    private Arc parent;
+    private double effectiveCost;
+    private boolean isMarked;
+    private boolean isDestination;
     
-    private Node sommetCourant;
-    private boolean marque;
-    private double coutRealise;
-    private Arc pere;
 
-    public Label(Node sommetCourant){
-        this.sommetCourant = sommetCourant;
-        this.marque = false;
-        this.coutRealise = Double.POSITIVE_INFINITY;
-        this.pere = null;
+    public Label(Node currentNode, Arc parent, double effectiveCost, Node destinationNode) {
+        this.currentNode = currentNode;
+        this.parent = parent;
+        this.effectiveCost = effectiveCost;
+        this.isMarked = false;
+        this.isDestination = currentNode.equals(destinationNode);
     }
 
-    public Node getSommetCourant (){
-        return sommetCourant;
+
+    public void update(Arc parent, double effectiveCost) {
+        this.parent = parent;
+        this.effectiveCost = effectiveCost;
     }
 
-    public boolean getMarque(){
-        return marque;
+
+    public boolean isDestination() {
+        return this.isDestination;
     }
 
-    public void setMarque(boolean b){
-        this.marque = b;
+
+    public List<Arc> getSuccessors() {
+        return this.currentNode.getSuccessors();
+    } 
+
+
+    public void mark() {
+        this.isMarked = true;
     }
 
-    public double getCoutRealise(){
-        return coutRealise;
+
+    public boolean isMarked() {
+        return this.isMarked;
     }
 
-    public void setCoutRealise(double cout){
-        this.coutRealise = cout;
+
+    public double getCost(){
+        return this.effectiveCost;
     }
 
-    public double getCout(){
-        // changera surement plus tard ...
-        return coutRealise;
+
+    public double getEffectiveCost() {
+        return this.effectiveCost;
     }
 
-    public void setPere(Arc p){
-        this.pere = p;
+
+    public Arc getParent() {
+        return this.parent;
     }
+
     
-    public Arc getPere(){
-        return pere;
-    }
-
     public int compareTo(Label lab) {
-        return Double.compare(this.coutRealise, lab.getCoutRealise());
+        return Double.compare(this.effectiveCost, lab.getEffectiveCost());
     }
 
 }

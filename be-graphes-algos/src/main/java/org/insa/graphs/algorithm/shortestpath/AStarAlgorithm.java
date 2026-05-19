@@ -1,18 +1,16 @@
 package org.insa.graphs.algorithm.shortestpath;
+import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Node;
 
 public class AStarAlgorithm extends DijkstraAlgorithm {
 
     public AStarAlgorithm(ShortestPathData data) {
         super(data);
-        labels = new LabelStar[data.getGraph().size()];
-        labels[data.getOrigin().getId()] = new LabelStar(data.getOrigin());
-        labels[data.getDestination().getId()] = new LabelStar(data.getDestination());
     }
 
     @Override
-    protected void createLabel(Node n){
-        labels[n.getId()] = new LabelStar(n);
+    protected Label createLabel(Node currentNode, Arc parent, double effectiveCost, Node destinationNode) {
+        return new LabelStar(currentNode, parent, effectiveCost, destinationNode, this.getInputData().getMode(), this.getInputData().getMaximumSpeed());
     }
 
-}
+} 

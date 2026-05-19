@@ -14,6 +14,7 @@ import org.insa.graphs.algorithm.AbstractAlgorithm;
 import org.insa.graphs.algorithm.AlgorithmFactory;
 import org.insa.graphs.algorithm.ArcInspector;
 import org.insa.graphs.algorithm.ArcInspectorFactory;
+import org.insa.graphs.algorithm.shortestpath.AStarAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.BellmanFordAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.DijkstraAlgorithm;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathAlgorithm;
@@ -250,6 +251,7 @@ public class Launch {
         drawing.drawPath(path);
 
         executeTestCases(DijkstraAlgorithm.class);
+        executeTestCases(AStarAlgorithm.class);
     }
 
 }
