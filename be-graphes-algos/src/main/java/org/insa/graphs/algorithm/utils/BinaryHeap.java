@@ -1,6 +1,7 @@
 package org.insa.graphs.algorithm.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Implements a binary heap containing elements of type E. Note that all comparisons are
@@ -17,12 +18,16 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     // The heap array.
     protected final ArrayList<E> array;
 
+    // HashMap to get the index of an element.
+    protected final HashMap<E, Integer> indices;
+
     /**
      * Construct a new empty binary heap.
      */
     public BinaryHeap() {
         this.currentSize = 0;
         this.array = new ArrayList<E>();
+        this.indices = new HashMap<E, Integer>();
     }
 
     /**
@@ -33,6 +38,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public BinaryHeap(BinaryHeap<E> heap) {
         this.currentSize = heap.currentSize;
         this.array = new ArrayList<E>(heap.array);
+        this.indices = new HashMap<E, Integer>(heap.indices);
     }
 
     /**
@@ -48,6 +54,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
         else {
             this.array.set(index, value);
         }
+        this.indices.put(value, index);
     }
 
     /**
@@ -129,14 +136,15 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     public void insert(E x) {
         int index = this.currentSize++;
         this.arraySet(index, x);
+        this.indices.put(x, index);
         this.percolateUp(index);
     }
 
     @Override
     public void remove(E x) throws ElementNotFoundException {
-        // Temporaire (en attendant de mieux implémenter)
-        // TO DO : le faire avec une HashList
-       int indexOfX = this.array.indexOf(x);
+       //int indexOfX = this.array.indexOf(x);
+       int indexOfX = this.indices.containsKey(x) ? this.indices.get(x) : -1;
+       this.indices.remove(x);
 
        // Gestion des cas limites
        if (indexOfX == -1 || indexOfX >= this.currentSize) {
@@ -161,6 +169,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     @Override
     public E deleteMin() throws EmptyPriorityQueueException {
         E minItem = findMin();
+        this.indices.remove(minItem);
         E lastItem = this.array.get(--this.currentSize);
         this.arraySet(0, lastItem);
         this.percolateDown(0);
