@@ -22,6 +22,7 @@ import org.insa.graphs.algorithm.shortestpath.ShortestPathData;
 import org.insa.graphs.algorithm.shortestpath.ShortestPathSolution;
 import org.insa.graphs.gui.drawing.Drawing;
 import org.insa.graphs.gui.drawing.components.BasicDrawing;
+import org.insa.graphs.model.Arc;
 import org.insa.graphs.model.Graph;
 import org.insa.graphs.model.Path;
 import org.insa.graphs.model.io.BinaryGraphReader;
@@ -171,7 +172,7 @@ public class Launch {
         ShortestPathAlgorithm bellmanFord = new BellmanFordAlgorithm(data);
         ShortestPathSolution bellmanFordOutput = bellmanFord.run();
 
-        // Vérifier qu'aucune solution n'est trouvée.
+        // Vérifier qu'une solution est trouvée.
         if (output.getStatus() == ShortestPathSolution.Status.OPTIMAL 
                 && Math.abs(output.getPath().getLength() - bellmanFordOutput.getPath().getLength()) < testThreshold) {
             System.out.println("[TEST nº4] testReasonableMap avec INSA : succès.");
@@ -205,6 +206,64 @@ public class Launch {
         }
     }
 
+    /**
+     * Tester des cartes de grande taille (vérifier que les sous-chemins sont des PCCs).
+     * 
+     * Un example :
+     * 1. Carte du Brésil entre Rio et Brasilia (en longueur).
+     * 
+     * @param testedAlgorithm
+     * @throws Exception
+     */
+    private static void testBigMap(Class<? extends AbstractAlgorithm<?>> testedAlgorithm) throws Exception{
+        // Chargement de la carte.
+        Graph graph;
+        try (final GraphReader reader = new BinaryGraphReader(new DataInputStream(
+                new BufferedInputStream(Launch.class.getResourceAsStream("/maps/brazil.mapgr"))))) {
+
+            graph = reader.read();
+        }
+
+        // Construction du ShortestPathData
+        List<ArcInspector> inspectors = ArcInspectorFactory.getAllFilters();
+        ShortestPathData data = new ShortestPathData(graph, graph.get(258999), graph.get(1053151), inspectors.get(1));
+        ShortestPathAlgorithm algorithm = (ShortestPathAlgorithm) AlgorithmFactory.createAlgorithm(testedAlgorithm, data);
+        ShortestPathSolution output = algorithm.run();
+
+        // Vérifier qu'une solution est trouvée.
+        if (output.getStatus() != ShortestPathSolution.Status.OPTIMAL) {
+            System.out.println("[TEST nº6] testBigMap avec Brésil : erreur, le PCC n'a pas été trouvé.");
+        } 
+
+        // Faire des essais de sous-chemins
+        Path bigPath = output.getPath();
+        for (int i = 0; i < 10; i++) {
+            // Trouver les deux éléments à lier.
+            int startIndex = (int)(Math.random() * bigPath.getArcs().size()) / 2;
+            int startId = bigPath.getArcs().get(startIndex).getOrigin().getId();
+            int endIndex = (int)((Math.random() + 1) * bigPath.getArcs().size() / 2);
+            int endId = bigPath.getArcs().get(endIndex).getDestination().getId();
+
+            // Application de l'algorithme.
+            data = new ShortestPathData(graph, graph.get(startId), graph.get(endId), inspectors.get(1));
+            algorithm = (ShortestPathAlgorithm) AlgorithmFactory.createAlgorithm(testedAlgorithm, data);
+            output = algorithm.run();
+
+            // Calcul de la distance entre ces deux points dans le PCC trouvé
+            List<Arc> subpathArcs = bigPath.getArcs().subList(startIndex, endIndex + 1);
+            float distance = 0;
+            for (Arc arc : subpathArcs) {
+                distance += arc.getLength();
+            }
+
+            // Comparaison
+            if (Math.abs(output.getPath().getLength() - distance) < testThreshold) {
+                System.out.println("[TEST nº6] testBigMap avec Brésil : succès (" + (i + 1) +"/10).");
+            } else {
+                System.err.println("[TEST nº6] testBigMap avec Brésil : échec (" + (i + 1) + "/10) (#looser).");
+            }
+        }
+    }
 
     /**
      * Fonction qui fait l'appel à tous les tests.
@@ -216,11 +275,10 @@ public class Launch {
         testPathDoesNotExist(testedAlgorithm);
         testPathIsNull(testedAlgorithm);
         testReasonableMap(testedAlgorithm);
-        // TO DO : quand Dijsktra optimisé, grande map.
+        testBigMap(testedAlgorithm);
     }
 
     public static void main(String[] args) throws Exception {
-
         // visit these directory to see the list of available files on commetud.
         final String mapName =
                 "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
@@ -249,8 +307,10 @@ public class Launch {
         }
 
         drawing.drawPath(path);
-
+        
+        System.out.println("Exécution des tests pour l'algorithme de Dijkstra.");
         executeTestCases(DijkstraAlgorithm.class);
+        System.out.println("Exécution des tests pour l'algorithme A*.");
         executeTestCases(AStarAlgorithm.class);
     }
 
